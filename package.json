@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple module to fetch RAILGUN artifacts",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -17,6 +18,9 @@
   },
   "author": "RAILGUN Project Contributors",
   "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "bugs": {
     "url": "https://github.com/railgun-reloaded/artifact-fetcher/issues"
   },

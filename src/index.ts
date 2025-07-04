@@ -1,1 +1,2 @@
-export * from './artifact-downloader'
+export * from './artifact-downloader.js'
+export * from './definitions.js'

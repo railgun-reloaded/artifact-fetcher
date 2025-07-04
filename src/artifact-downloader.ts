@@ -3,7 +3,7 @@ import debug from 'debug'
 import { createHelia } from 'helia'
 import { CID } from 'multiformats/cid'
 
-import { ArtifactName, RAILGUN_ARTIFACTS_CID_ROOT } from './definitions'
+import { ArtifactName, RAILGUN_ARTIFACTS_CID_ROOT } from './definitions.js'
 
 const dbg = debug('artifact-fetcher:downloader')
 
@@ -98,6 +98,7 @@ async function fetchFromIPFS (
   for await (const chunk of fs.cat(ipfsPath)) {
     chunks.push(chunk)
   }
+  console.log('chunks', chunks)
 
   // Flatten the chunks into a single Uint8Array
   const totalLength = chunks.reduce((len, c) => len + c.length, 0)
