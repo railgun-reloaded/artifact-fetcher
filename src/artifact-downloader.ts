@@ -3,19 +3,12 @@ import debug from 'debug'
 import { createHelia } from 'helia'
 import { CID } from 'multiformats/cid'
 
-const dbg = debug('artifact-fetcher:downloader')
+import { ArtifactName, RAILGUN_ARTIFACTS_CID_ROOT } from './definitions'
 
-const RAILGUN_ARTIFACTS_CID_ROOT = 'QmeBrG7pii1qTqsn7rusvDiqXopHPjCT9gR4PsmW7wXqZq'
+const dbg = debug('artifact-fetcher:downloader')
 
 let heliaNode: Awaited<ReturnType<typeof createHelia>> | undefined
 let fs: ReturnType<typeof unixfs> | undefined
-
-enum ArtifactName {
-  ZKEY = 'zkey',
-  WASM = 'wasm',
-  VKEY = 'vkey',
-  DAT = 'dat',
-}
 
 /**
  * Ensure a value is not null or undefined.
@@ -50,16 +43,25 @@ async function initHelia () {
 // }
 
 /**
- * sfd
- * @param artifactVariantString asdf
+ * Downloads the vkey, zkey, and wasm artifacts for a given artifact variant string.
+ * @param artifactVariantString The string representing the artifact variant (e.g., "2x16").
  */
 async function downloadArtifactsForVariant (artifactVariantString: string) {
   dbg(`Downloading artifacts: ${artifactVariantString}`)
 
   const [vkeyPath, zkeyPath, wasmPath] = await Promise.all([
-    fetchFromIPFS(RAILGUN_ARTIFACTS_CID_ROOT, ArtifactName.VKEY + artifactVariantString),
-    fetchFromIPFS(RAILGUN_ARTIFACTS_CID_ROOT, ArtifactName.ZKEY + artifactVariantString),
-    fetchFromIPFS(RAILGUN_ARTIFACTS_CID_ROOT, ArtifactName.WASM + artifactVariantString),
+    fetchFromIPFS(
+      RAILGUN_ARTIFACTS_CID_ROOT,
+      ArtifactName.VKEY + artifactVariantString
+    ),
+    fetchFromIPFS(
+      RAILGUN_ARTIFACTS_CID_ROOT,
+      ArtifactName.ZKEY + artifactVariantString
+    ),
+    fetchFromIPFS(
+      RAILGUN_ARTIFACTS_CID_ROOT,
+      ArtifactName.WASM + artifactVariantString
+    ),
   ])
 
   if (!isDefined(vkeyPath)) {
@@ -71,7 +73,7 @@ async function downloadArtifactsForVariant (artifactVariantString: string) {
   if (!isDefined(wasmPath)) {
     throw new Error('Could not download wasm artifact.')
   }
-};
+}
 
 /**
  * Fetches a file from IPFS using the root CID and file path.
@@ -92,6 +94,7 @@ async function fetchFromIPFS (
   // Combine root CID and path, e.g. 'QmRoot/relative/path/to/file'
   const ipfsPath = CID.parse(`${rootCid}/${path}`)
   const chunks: Uint8Array[] = []
+
   for await (const chunk of fs.cat(ipfsPath)) {
     chunks.push(chunk)
   }
@@ -100,11 +103,13 @@ async function fetchFromIPFS (
   const totalLength = chunks.reduce((len, c) => len + c.length, 0)
   const out = new Uint8Array(totalLength)
   let offset = 0
+
   for (const chunk of chunks) {
     out.set(chunk, offset)
     offset += chunk.length
   }
+
   return out
 }
 
-export { fetchFromIPFS, downloadArtifactsForVariant, initHelia, ArtifactName }
+export { fetchFromIPFS, downloadArtifactsForVariant, initHelia }
