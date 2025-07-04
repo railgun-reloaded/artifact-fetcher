@@ -91,11 +91,12 @@ async function fetchFromIPFS (
   // Ensure the Helia UnixFS API is initialized
   if (!fs) throw new Error('Helia UnixFS not initialized')
 
-  // Combine root CID and path, e.g. 'QmRoot/relative/path/to/file'
-  const ipfsPath = CID.parse(`${rootCid}/${path}`)
+  // Parse the root CID separately
+  const rootCID = CID.parse(rootCid)
   const chunks: Uint8Array[] = []
 
-  for await (const chunk of fs.cat(ipfsPath)) {
+  // Use the UnixFS API to navigate to the specific path within the CID
+  for await (const chunk of fs.cat(rootCID, { path })) {
     chunks.push(chunk)
   }
   console.log('chunks', chunks)
