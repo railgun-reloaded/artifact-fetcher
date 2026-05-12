@@ -10,6 +10,7 @@
     "build": "tsc --build",
     "build:nocheck": "tsc --noEmitOnError false",
     "clean": "tsc --build --clean & rm -rf ./artifacts*",
+    "prepare": "tsc --build",
     "test": "npm run build && node --test ./test/*.test.js",
     "test:debug": "npm run build:nocheck && DEBUG=ipfs-artifact-fetcher:* node --test ./test/*.test.js",
     "test:only": "npm run build && node --test-only ./test/*.test.js",
